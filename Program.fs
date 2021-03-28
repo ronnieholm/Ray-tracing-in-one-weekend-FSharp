@@ -139,6 +139,10 @@ with
 type Point3 = Vec3 // 3D point
 type Color = Vec3  // RGB color
 
+let black = Color.create 0. 0. 0.
+let white = Color.create 1. 1. 1.
+let blue = Color.create 0.5 0.7 1.0
+
 [<IsReadOnly; Struct>]
 type Ray =
     { Origin: Point3
@@ -153,7 +157,7 @@ let writeColor (c: Color) (samplesPerPixel: int) =
     let r = sqrt (scale * c.x)
     let g = sqrt (scale * c.y)
     let b = sqrt (scale * c.z)
-    printfn $"{int(256. * clamp r 0. 0.999)} {int(256. * clamp g 0. 0.999)} {int(256. * clamp b 0. 0.999)}"
+    printfn $"{int(256. * clamp r 0. 0.999)} {int(256. * clamp g 0. 0.999)} {int(256. * clamp b 0. 0.999)}"    
 
 let hitSphere (center: Point3) (radius: double) (r: Ray) =
     let oc = r.Origin - center
@@ -200,7 +204,7 @@ with
                 let r0' = r0 * r0
                 r0' + (1. + r0') * Math.Pow(1. - cosine, 5.)
             
-            let attenuation' = Color.create 1. 1. 1.
+            let attenuation' = white
             let refractionRatio = if hit.FrontFacing then double(1. / refractionIndex) else refractionIndex
             let unitDirection = Vec3.UnitVector r.Direction
             let cosTheta = Math.Min(Vec3.Dot -unitDirection hit.Normal, 1.)
@@ -298,7 +302,7 @@ let hit (r: Ray) (tMin: double) (tMax: double) (hittables: Hittable array): HitR
 
 let rec rayColor (r: Ray) (world: Hittable array) (depth: int): Color =
     // If we've exceeded the ray bounce limit, no more light is gathered
-    if depth <= 0 then Color.create 0. 0. 0.
+    if depth <= 0 then black
     else
         match hit r 0.001 (Double.PositiveInfinity) world with
         | Some h ->
@@ -306,13 +310,13 @@ let rec rayColor (r: Ray) (world: Hittable array) (depth: int): Color =
             match scatter with
             | Some (attenuation, scatter) ->
                 attenuation * rayColor scatter world (depth - 1)
-            | None -> Color.create 0. 0. 0. 
+            | None -> black
         | None ->
             let unitDirection = Vec3.UnitVector(r.Direction)
             let t = 0.5 * (unitDirection.y + 1.0)
 
             // Note: a + t(b - a) = (1 t)a + tb
-            (1.0 - t) * (Color.create 1. 1. 1.) + t * (Color.create 0.5 0.7 1.0)      
+            (1.0 - t) * white + t * blue    
 
 [<IsReadOnly; Struct>]
 type Camera =
@@ -378,7 +382,7 @@ let main _ =
     for j = imageHeight - 1 downto 0 do
         eprintf $"\rScan lines remaining: {j} "
         for i = 0 to imageWidth - 1 do
-            let mutable pixelColor = Color.create 0. 0. 0.
+            let mutable pixelColor = black
             for _ = 0 to samplePerPixel - 1 do
                 let u = (double(i) + rng.NextDouble()) / double(imageWidth - 1)
                 let v = (double(j) + rng.NextDouble()) / double(imageHeight - 1)
