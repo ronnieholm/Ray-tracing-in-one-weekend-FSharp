@@ -32,55 +32,71 @@ with
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.Length() =
         Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.LengthSquared() =
         v.x * v.x + v.y * v.y + v.z * v.z
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     override v.ToString() =
         $"{v.x} {v.y} {v.z}"   
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member create x y z =
         { x = x; y = y; z = z }
+        
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (~-) (v: Vec3) =
         { x = -v.x; y = -v.y; z = -v.z }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (+) (v: Vec3, u: Vec3) =
         { x = v.x + u.x; y = v.y + u.y; z = v.z + u.z }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (-) (v: Vec3, u: Vec3) =
         { x = v.x - u.x; y = v.y - u.y; z = v.z - u.z }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (*) (v: Vec3, u: Vec3) =
         { x = v.x * u.x; y = v.y * u.y; z = v.z * u.z }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (*) (v: Vec3, t: double) =
         { x = v.x * t; y = v.y * t; z = v.z * t }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (*) (t: double, v: Vec3) =
         { x = v.x * t; y = v.y * t; z = v.z * t }
+        
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (/) (v: Vec3, t: double) =
         { x = v.x / t; y = v.y / t; z = v.z / t }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member UnitVector (v: Vec3): Vec3 =
         v / v.Length()
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Dot (v: Vec3) (u: Vec3) =
         v.x * u.x + v.y * u.y + v.z * u.z
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Cross (v: Vec3) (u: Vec3) =
         { x = v.y * u.z - v.z * u.y
           y = v.z * u.x - v.x * u.z
           z = v.x * u.y - v.y * u.x }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Random(): Vec3 =
         { x = randomDouble(); y = randomDouble(); z = randomDouble() }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member RandomBetween (min: double) (max: double): Vec3 =
         { x = randomBetween min max
           y = randomBetween min max
           z = randomBetween min max }
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member RandomInUnitSphere(): Vec3 =
         seq {
@@ -89,6 +105,7 @@ with
                 if p.LengthSquared() < 1.
                 then yield p
         } |> Seq.take 1 |> Seq.head
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member RandomInUnitDisk() =        
         seq {
@@ -97,17 +114,21 @@ with
                 if p.LengthSquared() < 1.
                 then yield p               
         } |> Seq.take 1 |> Seq.head
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member RandomUnitVector() =
         Vec3.UnitVector (Vec3.RandomInUnitSphere())
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.NearZero(): bool =
         // Returns true if the vector is close to zero in all dimensions.
         let s = 1e-8
         Math.Abs v.x < s && Math.Abs v.y < s && Math.Abs v.z < s
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Reflect (v: Vec3) (unitVector: Vec3): Vec3 =
         v - 2. * (Vec3.Dot v unitVector) * unitVector
+
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: double) =
         let cosTheta = Math.Min(Vec3.Dot -unitVector normal, 1.)
@@ -132,8 +153,7 @@ let writeColor (c: Color) (samplesPerPixel: int) =
     let r = sqrt (scale * c.x)
     let g = sqrt (scale * c.y)
     let b = sqrt (scale * c.z)
-    //printfn $"{int(256. * clamp r 0. 0.999)} {int(256. * clamp g 0. 0.999)} {int(256. * clamp b 0. 0.999)}"
-    ()
+    printfn $"{int(256. * clamp r 0. 0.999)} {int(256. * clamp g 0. 0.999)} {int(256. * clamp b 0. 0.999)}"
 
 let hitSphere (center: Point3) (radius: double) (r: Ray) =
     let oc = r.Origin - center
