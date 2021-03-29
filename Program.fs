@@ -4,7 +4,7 @@ open System.Runtime.CompilerServices
 
 [<AutoOpen>]
 module Utils =
-    // Module wraps .NET RNG to abstract random number generation and to easily switch it out  for a faster generator.
+    // Module wraps .NET RNG to abstract random number generation and to easily switch it out for a faster generator.
     let rng = Random()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -250,40 +250,37 @@ with
                 else hit root
 
 let randomScene =
-    [|
-        let groundMaterial = Lambertian(Color.create 0.5 0.5 0.5)
-        yield Sphere((Point3.create 0. -1000. 0.), 1000., groundMaterial)
-        
-        for a = -11 to 10 do
-            for b = -11 to 10 do
-                let chooseMaterial = randomDouble()
-                let center = Point3.create (double(a) + 0.9 * randomDouble()) 0.2 (double(b) + 0.9 * randomDouble())
-                
-                if (center - Point3.create 4. 0.2 0.).Length() > 0.9 then
-                    if chooseMaterial < 0.8 then
-                        // Diffuse
-                        let albedo = Color.Random() * Color.Random()
-                        let material = Lambertian(albedo)
-                        yield Sphere(center, 0.2, material)
-                    elif chooseMaterial < 0.95 then
-                        // Metal
-                        let albedo = Color.RandomBetween 0.5 1.
-                        let fuzziness = randomBetween 0. 0.5
-                        let material = Metal(albedo, fuzziness)
-                        yield Sphere(center, 0.2, material)
-                    else
-                        // Glass
-                        let material = Dielectric(1.5)
-                        yield Sphere(center, 0.2, material)
-                        
-        let material1 = Dielectric(1.5)
-        yield Sphere((Point3.create 0. 1. 0.), 1., material1)
-
-        let material2 = Lambertian(Color.create 0.4 0.2 0.1)
-        yield Sphere((Point3.create -4. 1. 0.), 1., material2)
-
-        let material3 = Metal((Color.create 0.7 0.6 0.5), 0.)
-        yield Sphere((Point3.create 4. 1. 0.), 1., material3) |]
+    [| let groundMaterial = Lambertian(Color.create 0.5 0.5 0.5)
+       yield Sphere((Point3.create 0. -1000. 0.), 1000., groundMaterial)
+       
+       for a = -11 to 10 do
+           for b = -11 to 10 do
+               let chooseMaterial = randomDouble()
+               let center = Point3.create (double(a) + 0.9 * randomDouble()) 0.2 (double(b) + 0.9 * randomDouble())
+               
+               if (center - Point3.create 4. 0.2 0.).Length() > 0.9 then
+                   if chooseMaterial < 0.8 then
+                       // Diffuse
+                       let albedo = Color.Random() * Color.Random()
+                       let material = Lambertian(albedo)
+                       yield Sphere(center, 0.2, material)
+                   elif chooseMaterial < 0.95 then
+                       // Metal
+                       let albedo = Color.RandomBetween 0.5 1.
+                       let fuzziness = randomBetween 0. 0.5
+                       let material = Metal(albedo, fuzziness)
+                       yield Sphere(center, 0.2, material)
+                   else
+                       // Glass
+                       let material = Dielectric(1.5)
+                       yield Sphere(center, 0.2, material)
+                       
+       let material1 = Dielectric(1.5)
+       yield Sphere((Point3.create 0. 1. 0.), 1., material1)
+       let material2 = Lambertian(Color.create 0.4 0.2 0.1)
+       yield Sphere((Point3.create -4. 1. 0.), 1., material2)
+       let material3 = Metal((Color.create 0.7 0.6 0.5), 0.)
+       yield Sphere((Point3.create 4. 1. 0.), 1., material3) |]
 
 let hit (r: Ray) (tMin: double) (tMax: double) (hittables: Hittable array): HitRecord option =
     let mutable hitRecord = None
@@ -362,7 +359,7 @@ with
 let aspectRatio = 3. / 2.
 let imageWidth = 1200
 let imageHeight = int(double(imageWidth) / aspectRatio)
-let samplePerPixel = 10
+let samplePerPixel = 500
 let maxDepth = 50
 
 // Camera
