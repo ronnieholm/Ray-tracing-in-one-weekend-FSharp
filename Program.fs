@@ -102,8 +102,7 @@ with
         seq {
             while true do
                 let p = Vec3.RandomBetween -1. 1.
-                if p.LengthSquared() < 1.
-                then yield p
+                if p.LengthSquared() < 1. then yield p
         } |> Seq.take 1 |> Seq.head
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -111,8 +110,7 @@ with
         seq {
             while true do
                 let p = Vec3.create (randomBetween -1. 1.) (randomBetween -1. 1.) 0.
-                if p.LengthSquared() < 1.
-                then yield p               
+                if p.LengthSquared() < 1. then yield p               
         } |> Seq.take 1 |> Seq.head
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -165,8 +163,7 @@ let hitSphere (center: Point3) (radius: double) (r: Ray) =
     let halfB = Vec3.Dot oc r.Direction
     let c = oc.LengthSquared() - (radius * radius)
     let discriminant = halfB * halfB - a * c
-    if discriminant < 0.
-    then -1.
+    if discriminant < 0. then -1.
     else (-halfB - sqrt discriminant) / a
 
 [<IsReadOnly; Struct>]
@@ -244,8 +241,7 @@ with
                 let mutable root = (-halfB - sqrtD) / a 
                 if root < tMin || tMax < root then
                     root <- (-halfB + sqrtD) / a
-                    if root < tMin || tMax < root
-                    then None
+                    if root < tMin || tMax < root then None
                     else hit root
                 else hit root
 
