@@ -13,7 +13,7 @@ module Utils =
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     let inline randomBetween (min: double) (max: double): double =
-        min + (max - min) * rng.NextDouble()
+        min + (max - min) * randomDouble()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     let degreesToRadians (degrees: double): double =
@@ -381,8 +381,8 @@ let main _ =
         for i = 0 to imageWidth - 1 do
             let mutable pixelColor = black
             for _ = 0 to samplePerPixel - 1 do
-                let u = (double(i) + rng.NextDouble()) / double(imageWidth - 1)
-                let v = (double(j) + rng.NextDouble()) / double(imageHeight - 1)
+                let u = (double(i) + randomDouble()) / double(imageWidth - 1)
+                let v = (double(j) + randomDouble()) / double(imageHeight - 1)
                 let r = camera.GetRay u v
                 pixelColor <- pixelColor + rayColor r randomScene maxDepth
             writeColor pixelColor samplePerPixel
