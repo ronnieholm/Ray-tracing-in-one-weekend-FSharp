@@ -25,53 +25,53 @@ module Utils =
 
 [<IsReadOnly; Struct>]
 type Vec3 =
-    { x: double
-      y: double
-      z: double }
+    { X: double
+      Y: double
+      Z: double }
 with
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.Length() =
-        Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)
+        Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z)
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.LengthSquared() =
-        v.x * v.x + v.y * v.y + v.z * v.z
+        v.X * v.X + v.Y * v.Y + v.Z * v.Z
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     override v.ToString() =
-        $"{v.x} {v.y} {v.z}"   
+        $"{v.X} {v.Y} {v.Z}"   
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member create x y z =
-        { x = x; y = y; z = z }
+        { X = x; Y = y; Z = z }
         
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (~-) (v: Vec3) =
-        { x = -v.x; y = -v.y; z = -v.z }
+        { X = -v.X; Y = -v.Y; Z = -v.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (+) (v: Vec3, u: Vec3) =
-        { x = v.x + u.x; y = v.y + u.y; z = v.z + u.z }
+        { X = v.X + u.X; Y = v.Y + u.Y; Z = v.Z + u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (-) (v: Vec3, u: Vec3) =
-        { x = v.x - u.x; y = v.y - u.y; z = v.z - u.z }
+        { X = v.X - u.X; Y = v.Y - u.Y; Z = v.Z - u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (*) (v: Vec3, u: Vec3) =
-        { x = v.x * u.x; y = v.y * u.y; z = v.z * u.z }
+        { X = v.X * u.X; Y = v.Y * u.Y; Z = v.Z * u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (*) (v: Vec3, t: double) =
-        { x = v.x * t; y = v.y * t; z = v.z * t }
+        { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (*) (t: double, v: Vec3) =
-        { x = v.x * t; y = v.y * t; z = v.z * t }
+        { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
         
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member (/) (v: Vec3, t: double) =
-        { x = v.x / t; y = v.y / t; z = v.z / t }
+        { X = v.X / t; Y = v.Y / t; Z = v.Z / t }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member UnitVector (v: Vec3): Vec3 =
@@ -79,23 +79,23 @@ with
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Dot (v: Vec3) (u: Vec3) =
-        v.x * u.x + v.y * u.y + v.z * u.z
+        v.X * u.X + v.Y * u.Y + v.Z * u.Z
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Cross (v: Vec3) (u: Vec3) =
-        { x = v.y * u.z - v.z * u.y
-          y = v.z * u.x - v.x * u.z
-          z = v.x * u.y - v.y * u.x }
+        { X = v.Y * u.Z - v.Z * u.Y
+          Y = v.Z * u.X - v.X * u.Z
+          Z = v.X * u.Y - v.Y * u.X }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Random(): Vec3 =
-        { x = randomDouble(); y = randomDouble(); z = randomDouble() }
+        { X = randomDouble(); Y = randomDouble(); Z = randomDouble() }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member RandomBetween (min: double) (max: double): Vec3 =
-        { x = randomBetween min max
-          y = randomBetween min max
-          z = randomBetween min max }
+        { X = randomBetween min max
+          Y = randomBetween min max
+          Z = randomBetween min max }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member RandomInUnitSphere(): Vec3 =
@@ -123,7 +123,7 @@ with
     member v.NearZero(): bool =
         // Returns true if the vector is close to zero in all dimensions.
         let s = 1e-8
-        Math.Abs v.x < s && Math.Abs v.y < s && Math.Abs v.z < s
+        Math.Abs v.X < s && Math.Abs v.Y < s && Math.Abs v.Z < s
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Reflect (v: Vec3) (unitVector: Vec3): Vec3 =
@@ -154,9 +154,9 @@ with
 let writeColor (c: Color) (samplesPerPixel: int) =
     // Divide the color by the number of samples and gamma-correct for gamma = 2
     let scale = 1. / double(samplesPerPixel)
-    let r = sqrt (scale * c.x)
-    let g = sqrt (scale * c.y)
-    let b = sqrt (scale * c.z)
+    let r = sqrt (scale * c.X)
+    let g = sqrt (scale * c.Y)
+    let b = sqrt (scale * c.Z)
     printfn $"{int(256. * clamp r 0. 0.999)} {int(256. * clamp g 0. 0.999)} {int(256. * clamp b 0. 0.999)}"    
 
 let hitSphere (center: Point3) (radius: double) (r: Ray) =
@@ -310,7 +310,7 @@ let rec rayColor (r: Ray) (world: Hittable array) (depth: int): Color =
             | None -> black
         | None ->
             let unitDirection = Vec3.UnitVector(r.Direction)
-            let t = 0.5 * (unitDirection.y + 1.0)
+            let t = 0.5 * (unitDirection.Y + 1.0)
 
             // Note: a + t(b - a) = (1 t)a + tb
             (1.0 - t) * white + t * blue    
@@ -351,7 +351,7 @@ with
           LensRadius = lensRadius }
     member c.GetRay (s: double) (t: double): Ray =
         let rd = c.LensRadius * Vec3.RandomInUnitDisk()
-        let offset = c.U * rd.x + c.V * rd.y
+        let offset = c.U * rd.X + c.V * rd.Y
         { Origin = c.Origin + offset
           Direction = c.LowerLeftCorner + s * c.Horizontal + t * c.Vertical - c.Origin - offset }                
     
