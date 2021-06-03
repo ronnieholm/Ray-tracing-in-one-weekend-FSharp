@@ -4,7 +4,7 @@ open System.Runtime.CompilerServices
 
 [<AutoOpen>]
 module Utils =
-    // Module wraps .NET RNG to abstract random number generation and to easily switch it out for a faster generator.
+    // Wrap random number generator to easily switch in a faster one.
     let rng = Random()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -120,8 +120,8 @@ with
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.NearZero(): bool =
         // Returns true if the vector is close to zero in all dimensions.
-        let s = 1e-8
-        Math.Abs v.X < s && Math.Abs v.Y < s && Math.Abs v.Z < s
+        let e = 1e-8
+        Math.Abs v.X < e && Math.Abs v.Y < e && Math.Abs v.Z < e
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Reflect (v: Vec3) (unitVector: Vec3): Vec3 =
@@ -150,7 +150,7 @@ with
         r.Origin + t * r.Direction
 
 let writeColor (c: Color) (samplesPerPixel: int) =
-    // Divide the color by the number of samples and gamma-correct for gamma = 2
+    // Divide color by number of samples and gamma-correct by gamma = 2.
     let scale = 1. / double(samplesPerPixel)
     let r = sqrt (scale * c.X)
     let g = sqrt (scale * c.Y)
@@ -179,7 +179,7 @@ and Material =
    | Metal of albedo: Color * fuzziness: double
    | Dielectric of refractionIndex: double
 with
-    // Returns (* attenuation *) Color * (* scattered *) Ray
+    // Returns (* attenuation *) Color * (* scattered *) Ray.
     member m.scatter (r: Ray) (hit: HitRecord): Option<Color * Ray> =
         match m with
         | Lambertian albedo ->
@@ -237,7 +237,7 @@ with
                     let frontFacing, normal = setFaceNormal ((p - center) / radius)
                     Some { T = root; P = p; Normal = normal; FrontFacing = frontFacing; Material = material }
                 
-                // Find the nearest root that lies in the acceptable range
+                // Find the nearest root that lies in the acceptable range.
                 let mutable root = (-halfB - sqrtD) / a 
                 if root < tMin || tMax < root then
                     root <- (-halfB + sqrtD) / a
@@ -294,7 +294,7 @@ let hit (r: Ray) (tMin: double) (tMax: double) (hittables: Hittable array): HitR
     hitRecord
 
 let rec rayColor (r: Ray) (world: Hittable array) (depth: int): Color =
-    // If we've exceeded the ray bounce limit, no more light is gathered
+    // If we've exceeded the ray bounce limit, no more light is gathered.
     if depth <= 0 then black
     else
         match hit r 0.001 (Double.PositiveInfinity) world with
@@ -345,6 +345,7 @@ with
           V = v
           W = w
           LensRadius = lensRadius }
+
     member c.GetRay (s: double) (t: double): Ray =
         let rd = c.LensRadius * Vec3.RandomInUnitDisk()
         let offset = c.U * rd.X + c.V * rd.Y
