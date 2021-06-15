@@ -149,13 +149,14 @@ with
     member r.At(t: double): Point3 =
         r.Origin + t * r.Direction
 
-let writeColor (c: Color) (samplesPerPixel: int) =
+[<MethodImpl(MethodImplOptions.AggressiveInlining)>]
+let correctColor (c: Color) (samplesPerPixel: int): Color =
     // Divide color by number of samples and gamma-correct by gamma = 2.
     let scale = 1. / double(samplesPerPixel)
     let r = sqrt (scale * c.X)
     let g = sqrt (scale * c.Y)
     let b = sqrt (scale * c.Z)
-    printfn $"{int(256. * clamp r 0. 0.999)} {int(256. * clamp g 0. 0.999)} {int(256. * clamp b 0. 0.999)}"    
+    { X = 256. * clamp r 0. 0.999; Y = 256. * clamp g 0. 0.999; Z = 256. * clamp b 0. 0.999 }    
 
 let hitSphere (center: Point3) (radius: double) (r: Ray) =
     let oc = r.Origin - center
@@ -297,7 +298,7 @@ let rec rayColor (r: Ray) (world: Hittable array) (depth: int): Color =
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if depth <= 0 then black
     else
-        match hit r 0.001 (Double.PositiveInfinity) world with
+        match hit r 0.001 Double.PositiveInfinity world with
         | Some h ->
             let scatter = h.Material.scatter r h
             match scatter with
@@ -356,7 +357,7 @@ with
 let aspectRatio = 3. / 2.
 let imageWidth = 1200
 let imageHeight = int(double(imageWidth) / aspectRatio)
-let samplePerPixel = 500
+let samplePerPixel = 10
 let maxDepth = 50
 
 // Camera
@@ -370,20 +371,20 @@ let camera = Camera.create lookFrom lookAt viewUp 20. aspectRatio aperture dista
 [<EntryPoint>]
 let main _ =
     let sw = Stopwatch()
-    sw.Start()
-    printf $"P3\n{imageWidth} {imageHeight}\n255\n"
-    
-    for j = imageHeight - 1 downto 0 do
-        eprintf $"\rScan lines remaining: {j} "
-        for i = 0 to imageWidth - 1 do
-            let mutable pixelColor = black
-            for _ = 0 to samplePerPixel - 1 do
-                let u = (double(i) + randomDouble()) / double(imageWidth - 1)
-                let v = (double(j) + randomDouble()) / double(imageHeight - 1)
-                let r = camera.GetRay u v
-                pixelColor <- pixelColor + rayColor r randomScene maxDepth
-            writeColor pixelColor samplePerPixel
-
-    eprintfn "\nDone."
+    sw.Start()    
+    let image =
+        [| for j = imageHeight - 1 downto 0 do
+               eprintf $"\rScan lines remaining: {j} "
+               for i = 0 to imageWidth - 1 do
+                   let mutable pixelColor = black
+                   for _ = 0 to samplePerPixel - 1 do
+                       let u = (double(i) + randomDouble()) / double(imageWidth - 1)
+                       let v = (double(j) + randomDouble()) / double(imageHeight - 1)
+                       let r = camera.GetRay u v
+                       pixelColor <- pixelColor + rayColor r randomScene maxDepth
+                   correctColor pixelColor samplePerPixel |]        
     eprintfn $"Render time: {sw.Elapsed}"
+    
+    printf $"P3\n{imageWidth} {imageHeight}\n255\n"
+    image |> Array.iter (fun c -> printfn $"{int(c.X)} {int(c.Y)} {int(c.Z)}")    
     0
