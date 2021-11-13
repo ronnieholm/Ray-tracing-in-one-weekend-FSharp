@@ -8,26 +8,26 @@ module Utils =
     let rng = Random()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let randomDouble (): double =
+    let randomFloat () =
         rng.NextDouble()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let inline randomBetween (min: double) (max: double): double =
-        min + (max - min) * randomDouble()
+    let inline randomBetween (min: float) (max: float): float =
+        min + (max - min) * randomFloat()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let degreesToRadians (degrees: double): double =
+    let degreesToRadians (degrees: float): float =
         degrees * Math.PI / 180.
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let clamp (x: double) (min: double) (max: double): double =
+    let clamp (x: float) (min: float) (max: float): float =
         if x < min then min elif x > max then max else x
 
 [<IsReadOnly; Struct>]
 type Vec3 =
-    { X: double
-      Y: double
-      Z: double }
+    { X: float
+      Y: float
+      Z: float }
 with
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     member v.Length() =
@@ -62,15 +62,15 @@ with
         { X = v.X * u.X; Y = v.Y * u.Y; Z = v.Z * u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (v: Vec3, t: double) =
+    static member (*) (v: Vec3, t: float) =
         { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (t: double, v: Vec3) =
+    static member (*) (t: float, v: Vec3) =
         { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
         
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (/) (v: Vec3, t: double) =
+    static member (/) (v: Vec3, t: float) =
         { X = v.X / t; Y = v.Y / t; Z = v.Z / t }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -89,10 +89,10 @@ with
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     static member Random(): Vec3 =
-        { X = randomDouble(); Y = randomDouble(); Z = randomDouble() }
+        { X = randomFloat(); Y = randomFloat(); Z = randomFloat() }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomBetween (min: double) (max: double): Vec3 =
+    static member RandomBetween (min: float) (max: float): Vec3 =
         { X = randomBetween min max
           Y = randomBetween min max
           Z = randomBetween min max }
@@ -128,7 +128,7 @@ with
         v - 2. * (Vec3.Dot v unitVector) * unitVector
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: double) =
+    static member Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: float) =
         let cosTheta = Math.Min(Vec3.Dot -unitVector normal, 1.)
         let rOutPerpendicular = etaIOverEtaT * (unitVector + cosTheta * normal)
         let rOutParallel = -Math.Sqrt(Math.Abs(1. - rOutPerpendicular.LengthSquared())) * normal
@@ -146,19 +146,19 @@ type Ray =
     { Origin: Point3
       Direction: Vec3 }
 with 
-    member r.At(t: double): Point3 =
+    member r.At(t: float): Point3 =
         r.Origin + t * r.Direction
 
 [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
 let correctColor (c: Color) (samplesPerPixel: int): Color =
     // Divide color by number of samples and gamma-correct by gamma = 2.
-    let scale = 1. / double(samplesPerPixel)
+    let scale = 1. / float(samplesPerPixel)
     let r = sqrt (scale * c.X)
     let g = sqrt (scale * c.Y)
     let b = sqrt (scale * c.Z)
     { X = 256. * clamp r 0. 0.999; Y = 256. * clamp g 0. 0.999; Z = 256. * clamp b 0. 0.999 }    
 
-let hitSphere (center: Point3) (radius: double) (r: Ray) =
+let hitSphere (center: Point3) (radius: float) (r: Ray) =
     let oc = r.Origin - center
     let a = r.Direction.LengthSquared()
     let halfB = Vec3.Dot oc r.Direction
@@ -172,13 +172,13 @@ type HitRecord =
     { P: Point3
       Normal: Vec3
       Material: Material
-      T: double
+      T: float
       FrontFacing: bool }
 
 and Material =
    | Lambertian of albedo: Color
-   | Metal of albedo: Color * fuzziness: double
-   | Dielectric of refractionIndex: double
+   | Metal of albedo: Color * fuzziness: float
+   | Dielectric of refractionIndex: float
 with
     // Returns (* attenuation *) Color * (* scattered *) Ray.
     member m.scatter (r: Ray) (hit: HitRecord): Option<Color * Ray> =
@@ -196,28 +196,28 @@ with
             then Some (albedo, scattered)
             else None
         | Dielectric refractionIndex ->
-            let reflectance (cosine: double) =
+            let reflectance (cosine: float) =
                 // Use Schlick's approximation for reflectance.
                 let r0 = (1. - refractionIndex) / (1. + refractionIndex)
                 let r0' = r0 * r0
                 r0' + (1. + r0') * Math.Pow(1. - cosine, 5.)
             
             let attenuation' = white
-            let refractionRatio = if hit.FrontFacing then double(1. / refractionIndex) else refractionIndex
+            let refractionRatio = if hit.FrontFacing then float(1. / refractionIndex) else refractionIndex
             let unitDirection = Vec3.UnitVector r.Direction
             let cosTheta = Math.Min(Vec3.Dot -unitDirection hit.Normal, 1.)
             let sinTheta = Math.Sqrt(1. - cosTheta * cosTheta)
             let cannotRefract = refractionRatio * sinTheta > 1.
             let direction =
-                if cannotRefract || reflectance cosTheta > randomDouble()
+                if cannotRefract || reflectance cosTheta > randomFloat()
                 then Vec3.Reflect unitDirection hit.Normal
                 else Vec3.Refract unitDirection hit.Normal refractionRatio                         
             Some (attenuation', { Origin = hit.P; Direction = direction })
 
 type Hittable =
-    | Sphere of center: Point3 * radius: double * material: Material
+    | Sphere of center: Point3 * radius: float * material: Material
 with
-    member h.Hit (r: Ray) (tMin: double) (tMax: double): HitRecord option =
+    member h.Hit (r: Ray) (tMin: float) (tMax: float): HitRecord option =
         let setFaceNormal (outwardNormal: Vec3) =
             let frontFacing = Vec3.Dot r.Direction outwardNormal < 0.
             let normal = if frontFacing then outwardNormal else -outwardNormal
@@ -233,7 +233,7 @@ with
             if discriminant < 0. then None
             else
                 let sqrtD = sqrt discriminant
-                let hit (root: double) =                   
+                let hit (root: float) =                   
                     let p =  r.At root 
                     let frontFacing, normal = setFaceNormal ((p - center) / radius)
                     Some { T = root; P = p; Normal = normal; FrontFacing = frontFacing; Material = material }
@@ -252,8 +252,8 @@ let randomScene =
        
        for a = -11 to 10 do
            for b = -11 to 10 do
-               let chooseMaterial = randomDouble()
-               let center = Point3.create (double(a) + 0.9 * randomDouble()) 0.2 (double(b) + 0.9 * randomDouble())
+               let chooseMaterial = randomFloat()
+               let center = Point3.create (float(a) + 0.9 * randomFloat()) 0.2 (float(b) + 0.9 * randomFloat())
                
                if (center - Point3.create 4. 0.2 0.).Length() > 0.9 then
                    if chooseMaterial < 0.8 then
@@ -279,7 +279,7 @@ let randomScene =
        let material3 = Metal((Color.create 0.7 0.6 0.5), 0.)
        yield Sphere((Point3.create 4. 1. 0.), 1., material3) |]
 
-let hit (r: Ray) (tMin: double) (tMax: double) (hittables: Hittable array): HitRecord option =
+let hit (r: Ray) (tMin: float) (tMax: float) (hittables: Hittable array): HitRecord option =
     let mutable hitRecord = None
     let mutable hitAnything = false
     let mutable closestSoFar = tMax
@@ -321,9 +321,9 @@ type Camera =
       U: Vec3
       V: Vec3
       W: Vec3
-      LensRadius: double }
+      LensRadius: float }
 with 
-    static member create (lookFrom: Point3) (lookAt: Point3) (viewUp: Vec3) (verticalFieldOfView (* in degrees *): double) (aspectRatio: double) (aperture: double) (focusDistance: double): Camera =
+    static member create (lookFrom: Point3) (lookAt: Point3) (viewUp: Vec3) (verticalFieldOfView (* in degrees *): float) (aspectRatio: float) (aperture: float) (focusDistance: float): Camera =
         let theta = degreesToRadians verticalFieldOfView
         let h = Math.Tan(theta / 2.)
         let viewportHeight = 2. * h
@@ -347,7 +347,7 @@ with
           W = w
           LensRadius = lensRadius }
 
-    member c.GetRay (s: double) (t: double): Ray =
+    member c.GetRay (s: float) (t: float): Ray =
         let rd = c.LensRadius * Vec3.RandomInUnitDisk()
         let offset = c.U * rd.X + c.V * rd.Y
         { Origin = c.Origin + offset
@@ -356,7 +356,7 @@ with
 // Image
 let aspectRatio = 3. / 2.
 let imageWidth = 1200
-let imageHeight = int(double(imageWidth) / aspectRatio)
+let imageHeight = int(float(imageWidth) / aspectRatio)
 let samplePerPixel = 10
 let maxDepth = 50
 
@@ -369,7 +369,7 @@ let aperture = 0.1
 let camera = Camera.create lookFrom lookAt viewUp 20. aspectRatio aperture distanceToFocus              
 
 [<EntryPoint>]
-let main _ =
+let main _ =           
     let sw = Stopwatch()
     sw.Start()    
     let image =
@@ -378,8 +378,8 @@ let main _ =
                for i = 0 to imageWidth - 1 do
                    let mutable pixelColor = black
                    for _ = 0 to samplePerPixel - 1 do
-                       let u = (double(i) + randomDouble()) / double(imageWidth - 1)
-                       let v = (double(j) + randomDouble()) / double(imageHeight - 1)
+                       let u = (float(i) + randomFloat()) / float(imageWidth - 1)
+                       let v = (float(j) + randomFloat()) / float(imageHeight - 1)
                        let r = camera.GetRay u v
                        pixelColor <- pixelColor + rayColor r randomScene maxDepth
                    correctColor pixelColor samplePerPixel |]        
