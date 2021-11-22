@@ -369,22 +369,23 @@ let aperture = 0.1
 let camera = Camera.create lookFrom lookAt viewUp 20. aspectRatio aperture distanceToFocus              
 
 [<EntryPoint>]
-let main _ =           
+let main argv =           
     let sw = Stopwatch()
-    sw.Start()    
+    sw.Start()
     let image =
         [| for j = imageHeight - 1 downto 0 do
-               eprintf $"\rScan lines remaining: {j} "
-               for i = 0 to imageWidth - 1 do
-                   let mutable pixelColor = black
-                   for _ = 0 to samplePerPixel - 1 do
-                       let u = (float(i) + randomFloat()) / float(imageWidth - 1)
-                       let v = (float(j) + randomFloat()) / float(imageHeight - 1)
-                       let r = camera.GetRay u v
-                       pixelColor <- pixelColor + rayColor r randomScene maxDepth
-                   correctColor pixelColor samplePerPixel |]        
+                if not (argv.Length = 2 && argv.[1] = "benchmark") then eprintf $"\rScan lines remaining: {j} "
+                for i = 0 to imageWidth - 1 do
+                    let mutable pixelColor = black
+                    for _ = 0 to samplePerPixel - 1 do
+                        let u = (float(i) + randomFloat()) / float(imageWidth - 1)
+                        let v = (float(j) + randomFloat()) / float(imageHeight - 1)
+                        let r = camera.GetRay u v
+                        pixelColor <- pixelColor + rayColor r randomScene maxDepth
+                    correctColor pixelColor samplePerPixel |]        
     eprintfn $"Render time: {sw.Elapsed}"
     
-    printf $"P3\n{imageWidth} {imageHeight}\n255\n"
-    image |> Array.iter (fun c -> printfn $"{int(c.X)} {int(c.Y)} {int(c.Z)}")    
+    if not (argv.Length = 2 && argv.[1] = "benchmark") then        
+        printf $"P3\n{imageWidth} {imageHeight}\n255\n"
+        image |> Array.iter (fun c -> printfn $"{int(c.X)} {int(c.Y)} {int(c.Z)}")    
     0
