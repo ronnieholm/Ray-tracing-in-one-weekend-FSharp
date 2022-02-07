@@ -10,7 +10,6 @@ See also [C# implementation](https://github.com/ronnieholm/Ray-tracing-in-one-we
 ## Getting started
 
     $ git clone https://github.com/ronnieholm/Ray-tracing-in-one-weekend-FSharp.git
-    $ dotnet build
     $ dotnet run --configuration release RayTracingInOneWeekend.fsproj > out.ppm
     $ display out.ppm
 
@@ -22,7 +21,6 @@ So the benchmark isn't comparable:
 .NET 5 (Linux)
 
 ```console
-$ dotnet build --configuration release
 $ dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
 Render time: 00:01:33.0886140
 ```

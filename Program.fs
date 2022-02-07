@@ -23,7 +23,7 @@ module Utils =
     let clamp (x: float) (min: float) (max: float): float =
         if x < min then min elif x > max then max else x
 
-[<IsReadOnly; Struct>]
+[<IsReadOnly; Struct; NoEquality; NoComparison>]
 type Vec3 =
     { X: float
       Y: float
@@ -141,7 +141,7 @@ let black = Color.create 0. 0. 0.
 let white = Color.create 1. 1. 1.
 let blue = Color.create 0.5 0.7 1.0
 
-[<IsReadOnly; Struct>]
+[<IsReadOnly; Struct; NoEquality; NoComparison>]
 type Ray =
     { Origin: Point3
       Direction: Vec3 }
@@ -312,7 +312,7 @@ let rec rayColor (r: Ray) (world: Hittable array) (depth: int): Color =
             // Note: a + t(b - a) = (1 t)a + tb
             (1.0 - t) * white + t * blue    
 
-[<IsReadOnly; Struct>]
+[<IsReadOnly; Struct; NoEquality; NoComparison>]
 type Camera =
     { Origin: Point3
       Horizontal: Vec3
@@ -369,20 +369,20 @@ let aperture = 0.1
 let camera = Camera.create lookFrom lookAt viewUp 20. aspectRatio aperture distanceToFocus              
 
 [<EntryPoint>]
-let main argv =           
+let main argv =
     let sw = Stopwatch()
     sw.Start()
     let image =
         [| for j = imageHeight - 1 downto 0 do
-                if not (argv.Length = 2 && argv.[1] = "benchmark") then eprintf $"\rScan lines remaining: {j} "
-                for i = 0 to imageWidth - 1 do
-                    let mutable pixelColor = black
-                    for _ = 0 to samplePerPixel - 1 do
-                        let u = (float(i) + randomFloat()) / float(imageWidth - 1)
-                        let v = (float(j) + randomFloat()) / float(imageHeight - 1)
-                        let r = camera.GetRay u v
-                        pixelColor <- pixelColor + rayColor r randomScene maxDepth
-                    correctColor pixelColor samplePerPixel |]        
+               if not (argv.Length = 2 && argv.[1] = "benchmark") then eprintf $"\rScan lines remaining: {j} "
+               for i = 0 to imageWidth - 1 do
+                   let mutable pixelColor = black
+                   for _ = 0 to samplePerPixel - 1 do
+                       let u = (float(i) + randomFloat()) / float(imageWidth - 1)
+                       let v = (float(j) + randomFloat()) / float(imageHeight - 1)
+                       let r = camera.GetRay u v
+                       pixelColor <- pixelColor + rayColor r randomScene maxDepth
+                   correctColor pixelColor samplePerPixel |]        
     eprintfn $"Render time: {sw.Elapsed}"
     
     if not (argv.Length = 2 && argv.[1] = "benchmark") then        
