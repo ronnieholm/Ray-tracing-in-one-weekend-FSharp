@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6</TargetFramework>
+    <TargetFramework>net7</TargetFramework>
     <RootNamespace>Ray_tracing_in_one_weekend_FSharp</RootNamespace>
   </PropertyGroup>
 
