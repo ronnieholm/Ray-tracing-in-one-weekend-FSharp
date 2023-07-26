@@ -8,7 +8,7 @@ module Utils =
     let rng = Random()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let randomFloat () =
+    let randomFloat (): float =
         rng.NextDouble()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -30,15 +30,15 @@ type Vec3 =
       Z: float }
 with
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    member v.Length() =
+    member v.Length(): float =
         Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z)
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    member v.LengthSquared() =
+    member v.LengthSquared(): float =
         v.X * v.X + v.Y * v.Y + v.Z * v.Z
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    override v.ToString() =
+    override v.ToString(): string =
         $"{v.X} {v.Y} {v.Z}"   
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -46,31 +46,31 @@ with
         { X = x; Y = y; Z = z }
         
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (~-) (v: Vec3) =
+    static member (~-) (v: Vec3): Vec3 =
         { X = -v.X; Y = -v.Y; Z = -v.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (+) (v: Vec3, u: Vec3) =
+    static member (+) (v: Vec3, u: Vec3): Vec3 =
         { X = v.X + u.X; Y = v.Y + u.Y; Z = v.Z + u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (-) (v: Vec3, u: Vec3) =
+    static member (-) (v: Vec3, u: Vec3): Vec3 =
         { X = v.X - u.X; Y = v.Y - u.Y; Z = v.Z - u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (v: Vec3, u: Vec3) =
+    static member (*) (v: Vec3, u: Vec3): Vec3 =
         { X = v.X * u.X; Y = v.Y * u.Y; Z = v.Z * u.Z }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (v: Vec3, t: float) =
+    static member (*) (v: Vec3, t: float): Vec3 =
         { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (t: float, v: Vec3) =
+    static member (*) (t: float, v: Vec3): Vec3 =
         { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
         
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (/) (v: Vec3, t: float) =
+    static member (/) (v: Vec3, t: float): Vec3 =
         { X = v.X / t; Y = v.Y / t; Z = v.Z / t }
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -78,11 +78,11 @@ with
         v / v.Length()
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Dot (v: Vec3) (u: Vec3) =
+    static member Dot (v: Vec3) (u: Vec3): float =
         v.X * u.X + v.Y * u.Y + v.Z * u.Z
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Cross (v: Vec3) (u: Vec3) =
+    static member Cross (v: Vec3) (u: Vec3): Vec3 =
         { X = v.Y * u.Z - v.Z * u.Y
           Y = v.Z * u.X - v.X * u.Z
           Z = v.X * u.Y - v.Y * u.X }
@@ -106,7 +106,7 @@ with
         } |> Seq.take 1 |> Seq.head
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomInUnitDisk() =        
+    static member RandomInUnitDisk(): Vec3 =
         seq {
             while true do
                 let p = Vec3.create (randomBetween -1. 1.) (randomBetween -1. 1.) 0.
@@ -114,7 +114,7 @@ with
         } |> Seq.take 1 |> Seq.head
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomUnitVector() =
+    static member RandomUnitVector(): Vec3 =
         Vec3.UnitVector (Vec3.RandomInUnitSphere())
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
@@ -128,7 +128,7 @@ with
         v - 2. * (Vec3.Dot v unitVector) * unitVector
 
     [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: float) =
+    static member Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: float): Vec3 =
         let cosTheta = Math.Min(Vec3.Dot -unitVector normal, 1.)
         let rOutPerpendicular = etaIOverEtaT * (unitVector + cosTheta * normal)
         let rOutParallel = -Math.Sqrt(Math.Abs(1. - rOutPerpendicular.LengthSquared())) * normal
@@ -158,7 +158,7 @@ let correctColor (c: Color) (samplesPerPixel: int): Color =
     let b = sqrt (scale * c.Z)
     { X = 256. * clamp r 0. 0.999; Y = 256. * clamp g 0. 0.999; Z = 256. * clamp b 0. 0.999 }    
 
-let hitSphere (center: Point3) (radius: float) (r: Ray) =
+let hitSphere (center: Point3) (radius: float) (r: Ray): float =
     let oc = r.Origin - center
     let a = r.Direction.LengthSquared()
     let halfB = Vec3.Dot oc r.Direction
