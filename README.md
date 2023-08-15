@@ -16,7 +16,7 @@ See also [C# implementation](https://github.com/ronnieholm/Ray-tracing-in-one-we
 ## Benchmarking
 
 The F# implementation is based on newer version of the book than the C# version.
-So the benchmark isn't comparable:
+So benchmarks aren't comparable:
 
 .NET 5 (Linux)
 
@@ -27,4 +27,5 @@ Render time: 00:01:33.0886140
 
 ## References
 
+- [C++ reference implementation](https://github.com/RayTracing/raytracing.github.io)
 - [3D Programming Fundamentals [3D Perspective Projection] Tutorial 4](https://www.youtube.com/watch?v=UgM6mIQfGDA&list=PLqCJpWy5Fohe8ucwhksiv9hTF5sfid8lA&index=5)
