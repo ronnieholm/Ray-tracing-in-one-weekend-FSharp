@@ -7,20 +7,16 @@ module Utils =
     // Wrap random number generator to easily switch in a faster one.
     let rng = Random()
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let randomFloat (): float =
+    let inline randomFloat (): float =
         rng.NextDouble()
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     let inline randomBetween (min: float) (max: float): float =
         min + (max - min) * randomFloat()
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let degreesToRadians (degrees: float): float =
+    let inline degreesToRadians (degrees: float): float =
         degrees * Math.PI / 180.
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    let clamp (x: float) (min: float) (max: float): float =
+    let inline clamp (x: float) (min: float) (max: float): float =
         if x < min then min elif x > max then max else x
 
 [<IsReadOnly; Struct; NoEquality; NoComparison>]
@@ -29,106 +25,84 @@ type Vec3 =
       Y: float
       Z: float }
 with
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    member v.Length(): float =
+    member inline v.Length(): float =
         Math.Sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z)
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    member v.LengthSquared(): float =
+    member inline v.LengthSquared(): float =
         v.X * v.X + v.Y * v.Y + v.Z * v.Z
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
     override v.ToString(): string =
         $"{v.X} {v.Y} {v.Z}"   
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member create x y z =
+    static member inline create x y z: Vec3 =
         { X = x; Y = y; Z = z }
         
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (~-) (v: Vec3): Vec3 =
+    static member inline (~-) (v: Vec3): Vec3 =
         { X = -v.X; Y = -v.Y; Z = -v.Z }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (+) (v: Vec3, u: Vec3): Vec3 =
+    static member inline (+) (v: Vec3, u: Vec3): Vec3 =
         { X = v.X + u.X; Y = v.Y + u.Y; Z = v.Z + u.Z }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (-) (v: Vec3, u: Vec3): Vec3 =
+    static member inline (-) (v: Vec3, u: Vec3): Vec3 =
         { X = v.X - u.X; Y = v.Y - u.Y; Z = v.Z - u.Z }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (v: Vec3, u: Vec3): Vec3 =
+    static member inline (*) (v: Vec3, u: Vec3): Vec3 =
         { X = v.X * u.X; Y = v.Y * u.Y; Z = v.Z * u.Z }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (v: Vec3, t: float): Vec3 =
+    static member inline (*) (v: Vec3, t: float): Vec3 =
         { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (*) (t: float, v: Vec3): Vec3 =
+    static member inline (*) (t: float, v: Vec3): Vec3 =
         { X = v.X * t; Y = v.Y * t; Z = v.Z * t }
         
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member (/) (v: Vec3, t: float): Vec3 =
+    static member inline (/) (v: Vec3, t: float): Vec3 =
         { X = v.X / t; Y = v.Y / t; Z = v.Z / t }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member UnitVector (v: Vec3): Vec3 =
+    static member inline UnitVector (v: Vec3): Vec3 =
         v / v.Length()
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Dot (v: Vec3) (u: Vec3): float =
+    static member inline Dot (v: Vec3) (u: Vec3): float =
         v.X * u.X + v.Y * u.Y + v.Z * u.Z
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Cross (v: Vec3) (u: Vec3): Vec3 =
+    static member inline Cross (v: Vec3) (u: Vec3): Vec3 =
         { X = v.Y * u.Z - v.Z * u.Y
           Y = v.Z * u.X - v.X * u.Z
           Z = v.X * u.Y - v.Y * u.X }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Random(): Vec3 =
+    static member inline Random(): Vec3 =
         { X = randomFloat(); Y = randomFloat(); Z = randomFloat() }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomBetween (min: float) (max: float): Vec3 =
+    static member inline RandomBetween (min: float) (max: float): Vec3 =
         { X = randomBetween min max
           Y = randomBetween min max
           Z = randomBetween min max }
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomInUnitSphere(): Vec3 =
+    static member inline RandomInUnitSphere(): Vec3 =
         seq {
             while true do
                 let p = Vec3.RandomBetween -1. 1.
                 if p.LengthSquared() < 1. then yield p
         } |> Seq.take 1 |> Seq.head
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomInUnitDisk(): Vec3 =
+    static member inline RandomInUnitDisk(): Vec3 =
         seq {
             while true do
                 let p = Vec3.create (randomBetween -1. 1.) (randomBetween -1. 1.) 0.
                 if p.LengthSquared() < 1. then yield p               
         } |> Seq.take 1 |> Seq.head
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member RandomUnitVector(): Vec3 =
+    static member inline RandomUnitVector(): Vec3 =
         Vec3.UnitVector (Vec3.RandomInUnitSphere())
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    member v.NearZero(): bool =
+    member inline v.NearZero(): bool =
         // Returns true if the vector is close to zero in all dimensions.
         let e = 1e-8
         Math.Abs v.X < e && Math.Abs v.Y < e && Math.Abs v.Z < e
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Reflect (v: Vec3) (unitVector: Vec3): Vec3 =
+    static member inline Reflect (v: Vec3) (unitVector: Vec3): Vec3 =
         v - 2. * (Vec3.Dot v unitVector) * unitVector
 
-    [<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-    static member Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: float): Vec3 =
+    static member inline Refract (unitVector: Vec3) (normal: Vec3) (etaIOverEtaT: float): Vec3 =
         let cosTheta = Math.Min(Vec3.Dot -unitVector normal, 1.)
         let rOutPerpendicular = etaIOverEtaT * (unitVector + cosTheta * normal)
         let rOutParallel = -Math.Sqrt(Math.Abs(1. - rOutPerpendicular.LengthSquared())) * normal
@@ -149,8 +123,7 @@ with
     member r.At(t: float): Point3 =
         r.Origin + t * r.Direction
 
-[<MethodImpl(MethodImplOptions.AggressiveInlining)>]
-let correctColor (c: Color) (samplesPerPixel: int): Color =
+let inline correctColor (c: Color) (samplesPerPixel: int): Color =
     // Divide color by number of samples and gamma-correct by gamma = 2.
     let scale = 1. / float(samplesPerPixel)
     let r = sqrt (scale * c.X)
@@ -158,7 +131,7 @@ let correctColor (c: Color) (samplesPerPixel: int): Color =
     let b = sqrt (scale * c.Z)
     { X = 256. * clamp r 0. 0.999; Y = 256. * clamp g 0. 0.999; Z = 256. * clamp b 0. 0.999 }    
 
-let hitSphere (center: Point3) (radius: float) (r: Ray): float =
+let inline hitSphere (center: Point3) (radius: float) (r: Ray): float =
     let oc = r.Origin - center
     let a = r.Direction.LengthSquared()
     let halfB = Vec3.Dot oc r.Direction
@@ -181,7 +154,7 @@ and Material =
    | Dielectric of refractionIndex: float
 with
     // Returns (* attenuation *) Color * (* scattered *) Ray.
-    member m.scatter (r: Ray) (hit: HitRecord): Option<Color * Ray> =
+    member inline m.scatter (r: Ray) (hit: HitRecord): Option<Color * Ray> =
         match m with
         | Lambertian albedo ->
             let scatterDirection = hit.Normal + Vec3.RandomUnitVector()
@@ -217,7 +190,7 @@ with
 type Hittable =
     | Sphere of center: Point3 * radius: float * material: Material
 with
-    member h.Hit (r: Ray) (tMin: float) (tMax: float): HitRecord option =
+    member inline h.Hit (r: Ray) (tMin: float) (tMax: float): HitRecord option =
         let setFaceNormal (outwardNormal: Vec3) =
             let frontFacing = Vec3.Dot r.Direction outwardNormal < 0.
             let normal = if frontFacing then outwardNormal else -outwardNormal
@@ -279,7 +252,7 @@ let randomScene =
        let material3 = Metal((Color.create 0.7 0.6 0.5), 0.)
        yield Sphere((Point3.create 4. 1. 0.), 1., material3) |]
 
-let hit (r: Ray) (tMin: float) (tMax: float) (hittables: Hittable array): HitRecord option =
+let inline hit (r: Ray) (tMin: float) (tMax: float) (hittables: Hittable array): HitRecord option =
     let mutable hitRecord = None
     let mutable hitAnything = false
     let mutable closestSoFar = tMax
@@ -347,7 +320,7 @@ with
           W = w
           LensRadius = lensRadius }
 
-    member c.GetRay (s: float) (t: float): Ray =
+    member inline c.GetRay (s: float) (t: float): Ray =
         let rd = c.LensRadius * Vec3.RandomInUnitDisk()
         let offset = c.U * rd.X + c.V * rd.Y
         { Origin = c.Origin + offset
@@ -361,9 +334,9 @@ let samplePerPixel = 10
 let maxDepth = 50
 
 // Camera
-let lookFrom = (Point3.create 13. 2. 3.)
-let lookAt = (Point3.create 0. 0. 0.)
-let viewUp = (Point3.create 0. 1. 0.)
+let lookFrom = Point3.create 13. 2. 3.
+let lookAt = Point3.create 0. 0. 0.
+let viewUp = Point3.create 0. 1. 0.
 let distanceToFocus = 10.
 let aperture = 0.1
 let camera = Camera.create lookFrom lookAt viewUp 20. aspectRatio aperture distanceToFocus              
@@ -374,7 +347,7 @@ let main argv =
     sw.Start()
     let image =
         [| for j = imageHeight - 1 downto 0 do
-               if not (argv.Length = 2 && argv.[1] = "benchmark") then eprintf $"\rScan lines remaining: {j} "
+               if not (argv.Length = 2 && argv[1] = "benchmark") then eprintf $"\rScan lines remaining: {j} "
                for i = 0 to imageWidth - 1 do
                    let mutable pixelColor = black
                    for _ = 0 to samplePerPixel - 1 do
@@ -385,7 +358,7 @@ let main argv =
                    correctColor pixelColor samplePerPixel |]        
     eprintfn $"Render time: {sw.Elapsed}"
     
-    if not (argv.Length = 2 && argv.[1] = "benchmark") then        
+    if not (argv.Length = 2 && argv[1] = "benchmark") then        
         printf $"P3\n{imageWidth} {imageHeight}\n255\n"
         image |> Array.iter (fun c -> printfn $"{int(c.X)} {int(c.Y)} {int(c.Z)}")    
     0
