@@ -1,9 +1,8 @@
 # Ray-tracing-in-one-weekend-FSharp
 
-Based on [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html), Version 3.2.3,
-2020-12-07.
+Based on [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html), Version 3.2.3, 2020-12-07.
 
-See also [C# implementation](https://github.com/ronnieholm/Ray-tracing-in-one-weekend-CSharp). 
+See also [C# implementation](https://github.com/ronnieholm/Ray-tracing-in-one-weekend-CSharp).
 
 ![Random scene](Random-scene.png)
 
@@ -18,12 +17,10 @@ See also [C# implementation](https://github.com/ronnieholm/Ray-tracing-in-one-we
 The F# implementation is based on newer version of the book than the C# version.
 So benchmarks aren't comparable:
 
-.NET 5 (Linux)
+.NET 8 (Linux)
 
-```console
-$ dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
-Render time: 00:01:33.0886140
-```
+    $ dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
+    Render time: 00:01:24.4251590
 
 ## References
 
