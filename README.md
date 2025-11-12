@@ -17,10 +17,21 @@ See also [C# implementation](https://github.com/ronnieholm/Ray-tracing-in-one-we
 The F# implementation is based on newer version of the book than the C# version.
 So benchmarks aren't comparable:
 
-.NET 8 (Linux)
+Benchmarks run on AMD Ryzen 9 9950X 16-Core processor.
 
-    $ dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
-    Render time: 00:01:24.4251590
+.NET 10 (Linux)
+
+    $ /bin/time dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
+    Render time: 00:00:18.9031988
+    19.88user 0.13system 0:19.59elapsed 102%CPU (0avgtext+0avgdata 196824maxresident)k
+    0inputs+96outputs (0major+57150minor)pagefaults 0swaps
+
+.NET 9 (Linux)
+
+    $ /bin/time dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
+    Render time: 00:00:16.9815730
+    17.73user 0.13system 0:17.60elapsed 101%CPU (0avgtext+0avgdata 173852maxresident)k
+    0inputs+56outputs (0major+51335minor)pagefaults 0swaps
 
 ## References
 
