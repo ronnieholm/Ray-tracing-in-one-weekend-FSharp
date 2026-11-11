@@ -19,6 +19,13 @@ So benchmarks aren't comparable:
 
 Benchmarks run on AMD Ryzen 9 9950X 16-Core processor.
 
+.NET 11 (Linux)
+
+    $ /bin/time dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
+    Render time: 00:00:30.3248245
+    30.85user 0.10system 0:30.77elapsed 100%CPU (0avgtext+0avgdata 187224maxresident)k
+    0inputs+32outputs (0major+48837minor)pagefaults 0swaps
+
 .NET 10 (Linux)
 
     $ /bin/time dotnet run --configuration release RayTracingInOneWeekend.fsproj benchmark
